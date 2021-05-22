@@ -1,13 +1,13 @@
 <template>
   <div id="app">
     <el-header>
-      <el-menu class="el-menu-demo" mode="horizontal" style="background: lightblue">
+      <el-menu class="el-menu-demo" mode="horizontal" style="background: lightblue"> <!--上导航栏-->
           <el-row type="flex" justify="center">
               <el-col :span="16">
                   <p style="text-align: left;padding-left: 50px" >门诊信息管理系统</p>
               </el-col>
               <el-col :span="4">
-                  <p>{{username}}</p>
+                  <p>{{name}}</p>
               </el-col>
               <el-col :span="4">
                   <p @click="LogOut">退出</p>
@@ -16,8 +16,8 @@
       </el-menu>
     </el-header>
     <el-container style="height: 860px; border: 1px solid #eee">
-      <el-aside width="300px">
-        <el-row style="height: 859px;" class="tac">
+      <el-aside width="300px" style="background: lightblue"> <!--左导航栏-->
+        <el-row style="height: 855px;" class="tac">
           <el-col>
             <el-row v-if="userid" class="user" type="flex" justify="center" align="middle">
               <el-col @click.native="toSetting()">
@@ -27,7 +27,7 @@
             <el-row v-else class="login" type="flex" justify="center" align="middle">
               <el-button @click="toLogin">请登录</el-button>
             </el-row>
-            <el-menu style="background: lightblue;text-align: left">
+            <el-menu style="background: lightblue;text-align: left"> <!--左导航栏有内容的部分-->
               <el-menu-item v-for="(item, index) in app" :key="index" @click="routerJump(item.router)" :class="color">
                 <i class="el-icon-menu"></i>
                 <span slot="title">{{item.name}}</span>
@@ -36,7 +36,7 @@
           </el-col>
         </el-row>
       </el-aside>
-      <el-container>
+      <el-container style="background: lightblue">  <!--功能-->
         <el-main>
           <el-col>
             <router-link></router-link>
@@ -57,6 +57,7 @@ export default {
     return {
       userid: this.$store.state.user.userid,
       username: this.$store.state.user.username,
+      name: this.$store.state.user.name,
       usertype: this.$store.state.user.usertype,
       audit: this.$store.state.user.audit,
       router: '',
@@ -88,6 +89,7 @@ export default {
         }).then(function(res){
           self.usertype = res.data.usertype;
           self.username = res.data.username;
+          self.name = res.data.name;
           self.audit = res.data.audit;
           self.getApp(res.data.usertype);
         }).catch(function(err){
@@ -134,7 +136,7 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-    background: lightblue;
+    background: lightblue;  /*全局背景*/
   /*margin-top: 60px;*/
 }
 .user,.login {

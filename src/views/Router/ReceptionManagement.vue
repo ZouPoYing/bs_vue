@@ -127,7 +127,7 @@
         <h1>您没有正在接诊的病人，请先接诊病人</h1>
       </el-col>
     </el-row>
-    <el-button @click="dialog = true" style="position: fixed;top: 350px;right: 50px; z-index: 100;" type="primary">开就诊单</el-button>
+    <el-button @click="dialog = true" style="position: fixed;top: 400px;right: 50px; z-index: 100;" type="primary">开就诊单</el-button>
     <div v-if="print" id="printCons">
         <el-row>
             <el-col>
@@ -320,8 +320,8 @@
           ji: self.setForm.ji
         }).then(function(res){
           if (res.data.success) {
-            self.getReception();
             self.$message.success('开就诊单成功');
+            self.getReception();
           } else {
             self.$message.error(res.data.msg);
           }
