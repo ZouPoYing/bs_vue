@@ -4,11 +4,10 @@
     <el-row type="flex" justify="center">
       <el-col :span="6">
         <span>请联系管理员</span>
-          <el-card style="margin: 50px 0 100px 0">
+          <el-card style="margin: 50px 0 100px 0" @click="getAdmin">
               <el-row type="flex" justify="center">
                   <el-col>
-                      <p style="font-size: 20px">管理员电话：1518</p>
-                      <p style="font-size: 20px">管理员邮箱：1518@qq.com</p>
+                      <p style="font-size: 20px">管理员电话：13900000000</p>
                   </el-col>
               </el-row>
           </el-card>
@@ -26,7 +25,7 @@
     name: "forgetPassword",
     data () {
       return {
-        data: []
+        admin: {}
       }
     },
     create() {
@@ -41,8 +40,12 @@
       },
       getAdmin() {
         var self = this;
-        axios.post('http://localhost:9091/hvs/user/getAdmin').then(function (res) {
-          self.data = res.data
+        axios.post('http://localhost:9091/bs/user/getAdmin').then(function (res) {
+          if (res.data.success) {
+            self.admin = res.data.admin
+          } else {
+            self.$message.error(res.data.msg);
+          }
         }).catch(function(err){
           self.$message.error(err);
         })

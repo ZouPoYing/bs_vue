@@ -4,17 +4,14 @@
     <el-row type="flex" justify="center">
       <el-col :span="6">
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="账号" prop="username">
+          <el-form-item label="用户名" prop="username">
             <el-input type="text" v-model="ruleForm.username" autocomplete="off"></el-input>
+          </el-form-item>
+          <el-form-item label="电话号码" prop="phone">
+            <el-input type="text" v-model="ruleForm.phone" autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
             <el-input type="password" v-model="ruleForm.password" autocomplete="off" show-password></el-input>
-          </el-form-item>
-          <el-form-item label="用户类型" prop="usertype">
-            <el-radio-group v-model="ruleForm.usertype">
-              <el-radio label="1" border>病人</el-radio>
-              <el-radio label="2" border>医生</el-radio>
-            </el-radio-group>
           </el-form-item>
           <el-form-item>
             <el-link @click="toLogin" :underline="false">立即登录</el-link>
@@ -38,7 +35,14 @@ export default {
   data () {
     var validateUsername = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入账号'))
+        callback(new Error('请输入用户名'))
+      } else {
+        callback()
+      }
+    }
+    var validatePhone = (rule, value, callback) => {
+      if (value === '') {
+        callback(new Error('请输入电话号码'))
       } else {
         callback()
       }
@@ -50,28 +54,21 @@ export default {
         callback()
       }
     }
-    var validateUsertype = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请选择用户类型'))
-      } else {
-        callback()
-      }
-    }
     return {
       ruleForm: {
         username: '',
-        password: '',
-        usertype: '1'
+        phone: '',
+        password: ''
       },
       rules: {
         username: [
           { validator: validateUsername, trigger: 'blur' }
         ],
+        phone: [
+          { validator: validatePhone, trigger: 'blur' }
+        ],
         password: [
           { validator: validatePassword, trigger: 'blur' }
-        ],
-        usertype: [
-          { validator: validateUsertype, trigger: 'blur' }
         ]
       }
     }
@@ -81,10 +78,10 @@ export default {
       var self = this;
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          axios.post('http://localhost:9091/hvs/user/regist',{
-            username: this.ruleForm.username,
-            password: this.ruleForm.password,
-            usertype: this.ruleForm.usertype
+          axios.post('http://localhost:9091/bs/user/regist',{
+            userName: this.ruleForm.username,
+            phone: this.ruleForm.phone,
+            password: this.ruleForm.password
           }).then(function (res) {
             if (res.data.success) {
               self.$message.success('登录成功，即将跳转登录界面');

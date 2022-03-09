@@ -1,6 +1,6 @@
 <template>
   <div>
-    <h1>医生信息管理</h1>
+    <h1>用户信息管理</h1>
     <el-row type="flex">
       <el-col :span="18" pull="5">
         <el-button
@@ -18,47 +18,31 @@
             type="index">
           </el-table-column>
           <el-table-column
-            prop="username"
-            label="工号">
+            prop="userId"
+            label="用户编号">
           </el-table-column>
           <el-table-column
-            prop="name"
-            label="姓名">
+            prop="userName"
+            label="用户名">
           </el-table-column>
           <el-table-column
             prop="password"
             label="密码">
           </el-table-column>
           <el-table-column
-            prop="telephone"
-            label="科室电话">
-          </el-table-column>
-          <el-table-column
-            prop="email"
-            label="邮箱">
+            prop="phone"
+            label="电话">
           </el-table-column>
           <el-table-column
             prop="sex"
             label="性别">
           </el-table-column>
           <el-table-column
-            prop="department"
-            label="科室">
-          </el-table-column>
-          <el-table-column
             prop="age"
             label="年龄">
           </el-table-column>
           <el-table-column
-            prop="level"
-            label="级别">
-          </el-table-column>
-          <el-table-column
-            prop="advantage"
-            label="优势">
-          </el-table-column>
-          <el-table-column
-            prop="date"
+            prop="createTime"
             label="注册时间">
           </el-table-column>
           <el-table-column
@@ -85,20 +69,17 @@
           :visible.sync="dialogVisible"
           width="30%">
           <el-form label-width="100px" class="demo-ruleForm" enctype="multipart/form-data">
-            <el-form-item label="工号" prop="username">
-              <el-input maxlength="10" type="text" v-model="setForm.username"></el-input>
+            <el-form-item label="用户编号" prop="username">
+              <el-input maxlength="10" type="text" disabled v-model="setForm.userId"></el-input>
             </el-form-item>
             <el-form-item label="姓名" prop="name">
-              <el-input maxlength="10" type="text" v-model="setForm.name"></el-input>
+              <el-input maxlength="10" type="text" v-model="setForm.userName"></el-input>
             </el-form-item>
             <el-form-item label="密码" prop="password">
               <el-input maxlength="16" type="text" v-model="setForm.password"></el-input>
             </el-form-item>
-            <el-form-item label="科室联系电话" prop="telephone">
-              <el-input maxlength="11" type="text" v-model="setForm.telephone"></el-input>
-            </el-form-item>
-            <el-form-item label="邮箱" prop="email">
-              <el-input maxlength="11" type="text" v-model="setForm.email"></el-input>
+            <el-form-item label="电话" prop="phone">
+              <el-input maxlength="11" type="text" v-model="setForm.phone"></el-input>
             </el-form-item>
             <el-form-item label="性别" prop="sex">
               <el-radio-group v-model="setForm.sex">
@@ -106,22 +87,13 @@
                 <el-radio label="女" border>女</el-radio>
               </el-radio-group>
             </el-form-item>
-            <el-form-item label="科室" prop="department">
-              <el-input type="text" v-model="setForm.department"></el-input>
-            </el-form-item>
             <el-form-item label="年龄" prop="age">
               <el-input type="text" v-model="setForm.age"></el-input>
             </el-form-item>
-            <el-form-item label="级别" prop="level">
-              <el-input type="text" v-model="setForm.level"></el-input>
-            </el-form-item>
-            <el-form-item label="优势" prop="advantage">
-              <el-input type="text" v-model="setForm.advantage"></el-input>
-            </el-form-item>
           </el-form>
           <span slot="footer" class="dialog-footer">
-            <el-button v-if="isAdd" type="primary" @click="addDoctorDetail">确 定</el-button>
-            <el-button v-else type="primary" @click="updateDoctorDetail">修 改</el-button>
+            <el-button v-if="isAdd" type="primary" @click="addDetail">确 定</el-button>
+            <el-button v-else type="primary" @click="updateDetail">修 改</el-button>
             <el-button @click="dialogVisible = false">取 消</el-button>
         </span>
         </el-dialog>
@@ -145,13 +117,15 @@ export default {
     }
   },
   created() {
-    this.getDoctorDetail();
+    this.getUserList();
   },
   methods: {
-    getDoctorDetail() {
+    getUserList() {
       var self = this
-      axios.post('http://localhost:9091/hvs/user/getDoctorDetail').then(function(res){
-        self.tableData = res.data
+      axios.post('http://localhost:9091/bs/user/getUserList').then(function(res){
+        if (res.data.success) {
+          self.tableData = res.data.userList
+        }
       }).catch(function(err){
         self.$message.error(err);
       })
@@ -159,29 +133,22 @@ export default {
     add() {
       this.setForm = {}
       this.setForm.sex = '男'
-      this.setForm.usertype = '2'
       this.title = '新增'
       this.dialogVisible = !this.dialogVisible
       this.isAdd = true
     },
-    addDoctorDetail() {
+    addDetail() {
       var self = this;
-      axios.post('http://localhost:9091/hvs/user/addDoctorDetail', {
-        username: self.setForm.username,
-        name: self.setForm.name,
+      axios.post('http://localhost:9091/bs/user/addUserDetail', {
+        userName: self.setForm.userName,
         password: self.setForm.password,
-        telephone: self.setForm.telephone,
-        email: self.setForm.email,
+        phone: self.setForm.phone,
         sex: self.setForm.sex,
-        usertype: self.setForm.usertype,
-        department: self.setForm.department,
-        level: self.setForm.level,
-        advantage: self.setForm.advantage,
-        age: self.age
+        age: self.setForm.age
       }).then(function(res){
         if (res.data.success) {
           self.$message.success('新增成功');
-          self.getDoctorDetail();
+          self.getUserList();
           self.dialogVisible = !self.dialogVisible
         } else {
           self.$message.error(res.data.msg);
@@ -198,25 +165,19 @@ export default {
       this.isAdd = false
       this.setForm = row
     },
-    updateDoctorDetail() {
+    updateDetail() {
       var self = this;
-      axios.post('http://localhost:9091/hvs/user/updateDoctorDetail', {
-        username: self.setForm.username,
-        name: self.setForm.name,
+      axios.post('http://localhost:9091/bs/user/updateUserDetail', {
+        userName: self.setForm.userName,
+        userId: self.setForm.userId,
         password: self.setForm.password,
-        telephone: self.setForm.telephone,
-        email: self.setForm.email,
+        phone: self.setForm.phone,
         sex: self.setForm.sex,
-        usertype: self.setForm.usertype,
-        department: self.setForm.department,
-        level: self.setForm.level,
-        advantage: self.setForm.advantage,
-        age: self.setForm.age,
-        userid: self.setForm.userid
+        age: self.setForm.age
       }).then(function(res){
         if (res.data.success) {
           self.$message.success('修改成功');
-          self.getDoctorDetail();
+          self.getUserList();
           self.dialogVisible = !self.dialogVisible
         } else {
           self.$message.error(res.data.msg);
@@ -229,12 +190,12 @@ export default {
     },
     deleteRow(row) {
       var self = this;
-      axios.post('http://localhost:9091/hvs/user/deleteDoctorDetail', {
-        userid: row.userid
+      axios.post('http://localhost:9091/bs/user/deleteUser', {
+        userId: row.userId
       }).then(function(res){
         if (res.data.success) {
           self.$message.success('删除成功');
-          self.getDoctorDetail();
+          self.getUserList();
         } else {
           self.$message.error(res.data.msg);
         }

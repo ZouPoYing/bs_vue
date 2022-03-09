@@ -1,16 +1,16 @@
 <template>
   <div id="login">
-    <h1>门诊信息管理系统</h1>
+    <h1>登录</h1>
     <el-row type="flex" justify="center">
       <el-col :span="6">
         <el-form :model="ruleForm" status-icon :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
-          <el-form-item label="账号" prop="username">
-            <el-input maxlength="10" type="text" v-model="ruleForm.username" placeholder="请输入1-10位字符或数字"
+          <el-form-item label="电话号码" prop="phone">
+            <el-input maxlength="11" type="text" v-model="ruleForm.phone" placeholder="请输入电话号码"
                       autocomplete="off"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input minlength="4" maxlength="16" type="password" v-model="ruleForm.password"
-                      placeholder="请输入4-16位字符或数字" autocomplete="off" show-password></el-input>
+            <el-input minlength="1" maxlength="16" type="password" v-model="ruleForm.password"
+                      placeholder="请输入1-16位字符或数字" autocomplete="off" show-password></el-input>
           </el-form-item>
           <el-form-item>
             <el-link style="padding: 0 10px 0 10px" @click="toRegist" :underline="false">立即注册</el-link>
@@ -32,9 +32,9 @@ import axios from "axios";
 export default {
   name: 'Login',
   data () {
-    var validateUsername = (rule, value, callback) => {
+    var validatePhone = (rule, value, callback) => {
       if (value === '') {
-        callback(new Error('请输入用户名'))
+        callback(new Error('请输入电话号码'))
       } else {
         callback()
       }
@@ -49,14 +49,14 @@ export default {
     return {
       ruleForm: {
         password: '',
-        username: ''
+        phone: ''
       },
       rules: {
         password: [
           { validator: validatePassword, trigger: 'blur' }
         ],
-        username: [
-          { validator: validateUsername, trigger: 'blur' }
+        phone: [
+          { validator: validatePhone, trigger: 'blur' }
         ]
       }
     }
@@ -66,13 +66,12 @@ export default {
       var self = this;
       this.$refs[formName].validate((valid) => {
         if (valid) {
-          axios.post('http://localhost:9091/hvs/user/login',{
-            username: this.ruleForm.username,
+          axios.post('http://localhost:9091/bs/user/login',{
+            phone: this.ruleForm.phone,
             password: this.ruleForm.password
           }).then(function (res) {
             if (res.data.success) {
-              self.$store.commit('getUserId',res.data.userid);
-              self.$store.commit('getName',res.data.name);
+              self.$store.commit('setUser',res.data.user);
               self.$emit('login');
               self.$message.success('登录成功，即将跳转首页');
               setTimeout(() => {

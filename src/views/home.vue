@@ -1,9 +1,9 @@
 <template>
   <div>
     <h1>首页</h1>
-    <el-row v-if="this.$store.state.user.userid">
-      <h2>欢迎您：{{name}}</h2>
-      <h2>用户类型：{{usertype}}</h2>
+    <el-row v-if="this.$store.state.user.userId">
+      <h2>欢迎您：{{user.userName}}</h2>
+      <h2>用户类型：{{user.type == 9?'管理员':'普通用户'}}</h2>
     </el-row>
     <el-row v-else>
       <h2>暂无用户信息，请先登录</h2>
@@ -82,6 +82,7 @@ export default {
   components: {Divider},
   data() {
     return {
+      user:{},
       username: this.$store.state.user.username,
       usertype: this.$store.state.user.usertype,
       audit: this.$store.state.user.audit,
@@ -97,14 +98,14 @@ export default {
   methods: {
     getUser() {
       var self = this;
-      axios.post('http://localhost:9091/hvs/user/getUserById', {
-        userid: this.$store.state.user.userid
+      axios.post('http://localhost:9091/bs/user/getUserById', {
+        userId: this.$store.state.user.userId
       }).then(function(res){
-        self.usertype = res.data.usertype===0?'管理员':res.data.usertype===1?'病人':'医生';
-        self.name = res.data.name;
-        self.audit = res.data.audit===0?'未审核':'已审核';
-        self.changeMsg11(res.data.usertype);
-        self.changeMsg12(res.data.usertype);
+        if (res.data.success) {
+          self.user = res.data.user
+        } else {
+          self.$message.error(res.data.msg);
+        }
       }).catch(function(err){
         self.$message.error(err);
       })

@@ -4,40 +4,25 @@
     <el-row type="flex" justify="center">
       <el-col :span="6">
         <el-form label-width="100px" class="demo-ruleForm">
-          <el-form-item label="账号" prop="username">
-            <el-input maxlength="10" :disabled="disabled" type="text" v-model="username"></el-input>
-          </el-form-item>
-          <el-form-item label="姓名" prop="name">
-            <el-input maxlength="10" :disabled="disabled" type="text" v-model="name"></el-input>
+          <el-form-item label="用户名" prop="userName">
+            <el-input maxlength="10" :disabled="disabled" type="text" v-model="user.userName"></el-input>
           </el-form-item>
           <el-form-item label="密码" prop="password">
-            <el-input maxlength="16" minlength="4" :disabled="disabled" type="password" v-model="password"
+            <el-input maxlength="16" minlength="1" :disabled="disabled" type="password" v-model="user.password"
                       show-password></el-input>
           </el-form-item>
-          <el-form-item label="电话号码" prop="telephone">
-            <el-input maxlength="11" :disabled="disabled" type="text" v-model="telephone"></el-input>
+          <el-form-item label="电话号码" prop="phone">
+            <el-input maxlength="11" disabled="disabled" type="text" v-model="user.phone"></el-input>
           </el-form-item>
-          <el-form-item label="邮箱" prop="email">
-            <el-input maxlength="16" :disabled="disabled" type="text" v-model="email"></el-input>
-          </el-form-item>
-            <el-form-item v-if="isP" label="地址" prop="address">
-                <el-input maxlength="20" :disabled="disabled" type="text" v-model="address"></el-input>
-            </el-form-item>
           <el-form-item label="性别" prop="sex">
-            <el-radio-group :disabled="disabled" v-model="sex">
+            <el-radio-group :disabled="disabled" v-model="user.sex">
               <el-radio label="男" border>男</el-radio>
               <el-radio label="女" border>女</el-radio>
             </el-radio-group>
           </el-form-item>
             <el-form-item label="年龄" prop="age">
-                <el-input :disabled="disabled" type="text" v-model="age"></el-input>
+                <el-input :disabled="disabled" type="text" v-model="user.age"></el-input>
             </el-form-item>
-          <el-form-item label="用户类型" prop="usertype">
-            <el-input :disabled="true" type="text" v-model="usertype"></el-input>
-          </el-form-item>
-          <el-form-item label="注册时间" prop="date">
-            <el-input :disabled="true" type="text" v-model="date"></el-input>
-          </el-form-item>
           <el-form-item>
             <el-button type="primary" @click="updateUser">修改</el-button>
             <el-button type="danger" @click="LogOut">退出登录</el-button>
@@ -56,18 +41,7 @@ export default {
   data() {
     return {
       disabled: true,
-      isP: false,
-      username: '',
-      name: '',
-      password: '',
-      telephone: '',
-      email: '',
-      usertype: '',
-      audit: '',
-      date: '',
-      sex: '',
-      age: '',
-      address: ''
+      user: {}
     }
   },
   created() {
@@ -76,22 +50,13 @@ export default {
   methods: {
     getUser() {
       var self = this;
-      axios.post('http://localhost:9091/hvs/user/getUserById', {
-        userid: this.$store.state.user.userid
+      axios.post('http://localhost:9091/bs/user/getUserById', {
+        userId: this.$store.state.user.userId
       }).then(function(res){
-        self.username = res.data.username;
-        self.name = res.data.name;
-        self.password = res.data.password;
-        self.telephone = res.data.telephone;
-        self.email = res.data.email;
-        self.usertype = res.data.usertype===0?'管理员':res.data.usertype===1?'病人':'医生';
-        self.audit = res.data.audit===0?'未审核':'已审核';
-        self.date = res.data.date;
-        self.sex = res.data.sex;
-        self.age = res.data.age;
-        self.address = res.data.address;
-        if (res.data.usertype===1) {
-          self.isP = true
+        if (res.data.success) {
+          self.user = res.data.user
+        } else {
+          self.$message.error(res.data.msg);
         }
       }).catch(function(err){
         self.$message.error(err);
@@ -103,27 +68,16 @@ export default {
         return
       }
       var self = this
-      axios.post('http://localhost:9091/hvs/user/updateUser', {
-        userid: this.$store.state.user.userid,
-        username: self.username,
-        name: self.name,
+      axios.post('http://localhost:9091/bs/user/updateUser', {
+        userId: this.$store.state.user.userId,
+        userName: self.user.userName,
         password: self.password,
-        telephone: self.telephone,
-        email: self.email,
-        age: self.age,
-        sex: self.sex==='null'?'':self.sex,
-        address: self.address
+        age: self.user.age,
+        sex: self.user.sex
       }).then(function(res){
         if (res.data.success) {
           self.$message.success('修改成功');
-          self.username = res.data.username;
-          self.name = res.data.name;
-          self.password = res.data.password;
-          self.telephone = res.data.telephone;
-          self.email = res.data.email;
-          self.sex = res.data.sex;
-          self.age = res.data.age;
-          self.address = res.data.address;
+          self.getUser()
         } else {
           self.$message.error(res.data.msg);
         }
@@ -132,8 +86,7 @@ export default {
       })
     },
     LogOut() {
-      this.$store.commit('clearUserCache');
-      this.$emit('logout');
+      this.$store.commit('setUser', {});
       this.$message.success('注销成功，即将跳转登录页');
       setTimeout(() => {
         this.$router.push('/login')
