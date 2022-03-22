@@ -250,7 +250,6 @@
       },
       add() {
         this.setForm = {}
-        this.setForm.isDefault = '是'
         this.title = '新增'
         this.dialogVisible = !this.dialogVisible
         this.isAdd = true
