@@ -132,7 +132,6 @@ export default {
     },
     add() {
       this.setForm = {}
-      this.setForm.sex = '男'
       this.title = '新增'
       this.dialogVisible = !this.dialogVisible
       this.isAdd = true
