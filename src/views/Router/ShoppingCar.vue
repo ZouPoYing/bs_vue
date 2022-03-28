@@ -50,6 +50,19 @@
                     <el-col span="8">
                         <p>{{address.phone}}</p>
                     </el-col>
+                    <el-col span="12">
+                        <el-select v-model="address" placeholder="请选择">
+                            <el-option
+                                    v-for="item in addressList"
+                                    :key="item.addressId" :value="item"
+                                    :name="item.name" :phone="item.phone" :address="item.address" :detail="item.detail">
+                                <span style="float: left">{{ item.name}}-</span>
+                                <span style="float: left">{{ item.phone}}-</span>
+                                <span style="float: left; color: #8492a6; font-size: 13px">{{ item.address}}</span>
+                                <span style="float: left; color: #8492a6; font-size: 13px">{{ item.detail}}</span>
+                            </el-option>
+                        </el-select>
+                    </el-col>
                 </el-row>
             </el-card>
             <el-image
@@ -74,13 +87,29 @@
         tableData: [],
         dialogVisible: false,
         setForm: [],
-        address: {}
+        address: {},
+        addressList: []
       }
     },
     created() {
       this.getShoppingCar();
+      this.getAddressList();
     },
     methods: {
+      getAddressList() {
+        var self = this
+        axios.post('http://localhost:9091/bs/address/getAddressList',{
+          userId: self.$store.state.user.userId
+        }).then(function(res){
+          if (res.data.success) {
+            self.addressList = res.data.addressList
+          } else {
+            self.$message.error(res.data.msg);
+          }
+        }).catch(function(err){
+          self.$message.error(err);
+        })
+      },
       pay2(addressId) {
         var self = this
         axios.post('http://localhost:9091/bs/order/pay',{
